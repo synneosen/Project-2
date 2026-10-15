@@ -3,9 +3,8 @@ from sklearn.model_selection import train_test_split
 
 seed = 2000
 
-#Legg inn verdiene som gav den beste MSE i prosjekt 1:
-# n = 
-# sigma = 
+n = 100
+sigma = 0.1
 test_size = 0.2
 seed = 2026
 
