@@ -59,7 +59,6 @@ ACTIVATIONS = {
     "softmax": (softmax, None),
 }
 
-
 #Cost functions. y_pred and y_true have shape (n_samples, n_outputs).
 #For classification, y_true is one-hot encoded.
 
