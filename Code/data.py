@@ -6,7 +6,8 @@ seed = 2000
 #Legg inn verdiene som gav den beste MSE i prosjekt 1:
 # n = 
 # sigma = 
-# test_size = 0.2
+test_size = 0.2
+seed = 2026
 
 def runge(x):
     return 1.0 / (1.0 + 25*x**2)
@@ -30,9 +31,7 @@ def scale_regression(X_train, X_test):
     std = X_train.std(axis=0)
     return (X_train - mean) / std, (X_test - mean) / std
  
-
-#TODO: Synne 
-def load_mnist(path="mnist.npz", val_size = 10000, seed):
+def load_mnist(path="data/mnist.npz", val_size = 10000, seed=2026):
     """
     Henter hele MNIST-datasettet.
     Hvert bilde (28x28 piksler) gjøres om til én rad med 784 tall,
