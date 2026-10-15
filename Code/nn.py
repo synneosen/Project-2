@@ -11,44 +11,42 @@ Conventions (ikke endre på noe her uten å informere resten, altså etter alle 
 
 import numpy as np
 
-#TODO: Tora fyll inn funksjoner til og med cross_entropy
-
 def sigmoid(z):
-    raise NotImplementedError
-
+    return 1.0 / (1.0 + np.exp(-z))
 
 def sigmoid_der(z):
-    raise NotImplementedError
+    s = sigmoid(z)
+    return s * (1.0 - s)
 
 
 def relu(z):
-    raise NotImplementedError
+    return np.maximum(0.0, z)
 
 
 def relu_der(z):
-    raise NotImplementedError
+    return np.where(z > 0, 1.0, 0.0)
 
 
 def leaky_relu(z, alpha=0.01):
-    raise NotImplementedError
+    return np.where(z > 0, z, alpha * z)
 
 
 def leaky_relu_der(z, alpha=0.01):
-    raise NotImplementedError
+    return np.where(z > 0, 1.0, alpha)
 
-
-def identity(z):
+def linear(z):
     """Linear output layer for regression."""
-    raise NotImplementedError
+    return z
 
 
-def identity_der(z):
-    raise NotImplementedError
+def linear_der(z):
+    return np.ones_like(z)
 
 
 def softmax(z):
     """Row-wise softmax. Subtract the row max before exp for numerical stability."""
-    raise NotImplementedError
+    e = np.exp(z - np.max(z, axis=1, keepdims=True))
+    return e / np.sum(e, axis=1, keepdims=True)
 
 
 # Name -> (function, derivative). Softmax has no entry for its derivative:
@@ -57,7 +55,7 @@ ACTIVATIONS = {
     "sigmoid": (sigmoid, sigmoid_der),
     "relu": (relu, relu_der),
     "leaky_relu": (leaky_relu, leaky_relu_der),
-    "identity": (identity, identity_der),
+    "identity": (linear, linear_der),
     "softmax": (softmax, None),
 }
 
@@ -66,22 +64,25 @@ ACTIVATIONS = {
 #For classification, y_true is one-hot encoded.
 
 def mse(y_pred, y_true):
-    raise NotImplementedError
+    n = y_true.shape[0]
+    return np.sum((y_pred - y_true) ** 2) / n
 
 
 def mse_der(y_pred, y_true):
     """Derivative of the MSE with respect to y_pred."""
-    raise NotImplementedError
+    n = y_true.shape[0]
+    return 2.0 * (y_pred - y_true) / n
 
 
-def cross_entropy(y_pred, y_true):
+def cross_entropy(y_pred, y_true, eps=1e-12):
     """Multiclass cross entropy, y_pred = softmax output."""
-    raise NotImplementedError
+    n = y_true.shape[0]
+    return -np.sum(y_true * np.log(np.clip(y_pred, eps, 1.0))) / n
 
 
 COSTS = {
     "mse": (mse, mse_der),
-    "cross_entropy": (cross_entropy, None),  # used together with softmax: delta_L = a - y
+    "cross_entropy": (cross_entropy, None),
 }
 
 
