@@ -207,7 +207,7 @@ class NeuralNetwork:
     def cost(self, X, y):
         """Value of the cost function on (X, y), without the penalty terms."""
         output = self.forward(X)
-        return COSTS[self.cost_name][0](y, output) 
+        return COSTS[self.cost_name][0](output, y) 
 
 
 def train(model, optimizer, X, y, epochs, batch_size=None, seed=2026, X_val=None, y_val=None):
