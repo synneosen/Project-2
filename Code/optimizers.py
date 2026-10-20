@@ -36,7 +36,7 @@ class GD:
             b_new = b - self.learningrate*db #Calculating the new bias
             new_params.append((W_new, b_new)) #Storing them in the empty list
 
-            return new_params 
+        return new_params 
         
 
 
@@ -48,9 +48,9 @@ class RMSprop: #crating a signal for this optimizer
         self.s = None #Memmory wich is not stored yet
 
     def step(self, params, grads): 
-        if self.s in None: #check if this is the first layer
+        if self.s is None: #check if this is the first layer
             #list with memory for every layer
-            self.s = [np.zeros_like(W), np.zeros_like(b) for W,b in params] #The 0 array have the shape of W and b, for every layer
+            self.s = [(np.zeros_like(W), np.zeros_like(b)) for W,b in params] #The 0 array have the shape of W and b, for every layer
         new_params = [] #Epty list for new parameters
         new_s = [] #Empty list for updated memory
         for (W,b), (dW, db), (sW, sb) in zip(params, grads, self.s): #Fetching weights, biases their gradients and memory for every layer
@@ -62,8 +62,8 @@ class RMSprop: #crating a signal for this optimizer
 
             new_params.append((W_new, b_new)) #Add to the parameter list
             new_s.append((sW, sb)) #Add to the memory list
-        self.s = new_s #Keep the memory until nex step() run
-        return new_s
+        self.s = new_s #Keep the memory until next step() run
+        return new_params
 
 
 class Adam:
