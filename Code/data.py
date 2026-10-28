@@ -31,6 +31,7 @@ def scale_regression(X_train, X_test):
     return (X_train - mean) / std, (X_test - mean) / std
  
 def load_mnist(path="data/mnist.npz", val_size = 10000, seed=2026):
+    
     """
     Henter hele MNIST-datasettet.
     Hvert bilde (28x28 piksler) gjøres om til én rad med 784 tall,
