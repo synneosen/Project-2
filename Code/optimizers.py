@@ -81,33 +81,34 @@ class Adam:
         """Remember the bias correction with the iteration counter t."""
         if self.m is None:
             self.m = [(np.zeros_like(W), np.zeros_like(b)) for W, b in params]
-            self.t += 1
-            new_params = []
-            new_m = []
-            new_v = []
+            self.v = [(np.zeros_like(W), np.zeros_like(b)) for W, b in params]
+        self.t += 1
+        new_params = []
+        new_m = []
+        new_v = []
 
-            for (W, b), (dW, db), (mW,mb), (vW,vb) in zip(params, grads, self.m, self.v):
+        for (W, b), (dW, db), (mW,mb), (vW,vb) in zip(params, grads, self.m, self.v):
 
-                mW = self.beta1*mW + (1-self.beta1) * dW
-                mb = self.beta1*mb + (1-self.beta1) * db
+            mW = self.beta1*mW + (1-self.beta1) * dW
+            mb = self.beta1*mb + (1-self.beta1) * db
 
-                vW = self.beta2*vW + (1-self.beta2) * dW**2
-                vb = self.beta2*vb + (1-self.beta2) * db**2
-                #Correction since memories start at zero
-                mW_hat = mW/(1 - self.beta1**self.t)
-                mb_hat = mb/(1 - self.beta1**self.t)
-                vW_hat = vW/(1 - self.beta2**self.t)
-                vb_hat = vb/(1 - self.beta2**self.t)
-                #Calculating new weigts and biases
-                W_new = W - self.learning_rate*mW_hat / (np.sqrt(vW_hat) + self.eps)
-                b_new = b - self.learning_rate*mb_hat / (np.sqrt(vb_hat) + self.eps)
-                #collecting the new terms
-                new_params.append((W_new, b_new))
-                new_m.append((mW, mb))
-                new_v.append((vW, vb))
-            self.m = new_m
-            self.v = new_v
-            return new_params
+            vW = self.beta2*vW + (1-self.beta2) * dW**2
+            vb = self.beta2*vb + (1-self.beta2) * db**2
+            #Correction since memories start at zero
+            mW_hat = mW/(1 - self.beta1**self.t)
+            mb_hat = mb/(1 - self.beta1**self.t)
+            vW_hat = vW/(1 - self.beta2**self.t)
+            vb_hat = vb/(1 - self.beta2**self.t)
+            #Calculating new weigts and biases
+            W_new = W - self.learning_rate*mW_hat / (np.sqrt(vW_hat) + self.eps)
+            b_new = b - self.learning_rate*mb_hat / (np.sqrt(vb_hat) + self.eps)
+            #collecting the new terms
+            new_params.append((W_new, b_new))
+            new_m.append((mW, mb))
+            new_v.append((vW, vb))
+        self.m = new_m
+        self.v = new_v
+        return new_params
 
 
 
