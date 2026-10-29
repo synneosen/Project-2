@@ -40,6 +40,7 @@ def load_mnist(path="data/mnist.npz", val_size = 10000, seed=2026):
     Valideringssettet brukes til å teste ulike innstillinger (læringsrate, lag, noder osv.).
     Testsettet brukes bare én gang, helt til slutt, for å rapportere resultatet.
     Returnerer tre par: trening, validering og test.
+    
     Fasiten (labels) er tall fra 0 til 9.
     """
 
