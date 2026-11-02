@@ -40,8 +40,6 @@ def softmax(z):
     return e / np.sum(e, axis=1, keepdims=True)
 
 
-# Name -> (function, derivative). Softmax has no entry for its derivative:
-# combined with cross entropy, the output error is simply a - y.
 ACTIVATIONS = {
     "sigmoid": (sigmoid, sigmoid_der),
     "relu": (relu, relu_der),
@@ -50,8 +48,6 @@ ACTIVATIONS = {
     "softmax": (softmax, None),
 }
 
-#Cost functions. y_pred and y_true have shape (n_samples, n_outputs).
-#For classification, y_true is one-hot encoded.
 
 def mse(y_pred, y_true):
     n = y_true.shape[0]
@@ -67,12 +63,20 @@ def cross_entropy(y_pred, y_true, eps=1e-12):
     n = y_true.shape[0]
     return -np.sum(y_true * np.log(np.clip(y_pred, eps, 1.0))) / n
 
+def binary_cross_entropy(y_pred, y_true, eps=1e-12):
+    n = y_true.shape[0]
+    probabilities = np.clip(y_pred, eps, 1.0 - eps)
+    return -np.sum(
+        y_true * np.log(probabilities)
+        + (1.0 - y_true) * np.log(1.0 - probabilities)
+    ) / n
+
 
 COSTS = {
     "mse": (mse, mse_der),
     "cross_entropy": (cross_entropy, None),
+    "binary_cross_entropy": (binary_cross_entropy, None),
 }
-
 
 # FFNN network:
 class NeuralNetwork:
@@ -91,8 +95,8 @@ class NeuralNetwork:
             n_in = layer_sizes[i]
             n_out = layer_sizes[i + 1]
 
-            #He for ReLU, Xavier for other activations
-            if activations[i] == "relu":
+            #He for ReLU family, Xavier for other activations
+            if activations[i] == "relu" or activations[i] == "leaky_relu":
                 scale = np.sqrt(2 / n_in)
             else:
                 scale = np.sqrt(1 / n_in)
@@ -124,11 +128,24 @@ class NeuralNetwork:
         output = self.forward(X)
         n = X.shape[0] #number of input data points
 
-        #derivative of the cost function dC/da
-        delta = COSTS[self.cost_name][1](output, y)
-
-        #dC/da times derivative of the last activation function da/dz = derivative of the cost function w.r.t. z at the last activation
-        delta = delta * ACTIVATIONS[self.activations[-1]][1](self.z[-1])
+        if self.cost_name == "cross_entropy":
+            if self.activations[-1] != "softmax":
+                raise ValueError("cross_entropy requires a softmax output layer")
+            delta = (output - y) / n
+        elif self.cost_name == "binary_cross_entropy":
+            if self.activations[-1] != "sigmoid" or output.shape[1] != 1:
+                raise ValueError(
+                    "binary_cross_entropy requires one sigmoid output"
+                )
+            delta = (output - y) / n
+        else:
+            cost_derivative = COSTS[self.cost_name][1]
+            if cost_derivative is None:
+                raise ValueError(
+                    f"No output gradient is defined for cost {self.cost_name!r}"
+                )
+            delta = cost_derivative(output, y)
+            delta = delta * ACTIVATIONS[self.activations[-1]][1](self.z[-1])
 
         gradients = [] #list for storing gradient at each activation 
 
@@ -167,19 +184,17 @@ class NeuralNetwork:
         return np.argmax(output, axis=1) #if we have more columns, return each row index with the highest score
 
     def cost(self, X, y):
-        """Value of the cost function on (X, y), without the penalty terms."""
         output = self.forward(X)
-        return COSTS[self.cost_name][0](output, y) 
+        data_loss = COSTS[self.cost_name][0](output, y)
+        penalty = sum(
+            self.l1 * np.sum(np.abs(W)) + 0.5 * self.l2 * np.sum(W**2)
+            for W, _ in self.params
+        )
+        return data_loss + penalty
 
 
+#Siden batch size = none trener vi på full batch...
 def train(model, optimizer, X, y, epochs, batch_size=None, seed=2026, X_val=None, y_val=None):
-    """
-    Trains the model in place.
-    batch_size=None -> plain (full-batch) gradient descent.
-    batch_size=k    -> stochastic gradient descent with minibatches of size k,
-                       reshuffled every epoch with the given seed.
-    Returns a dict with the cost per epoch, e.g. {"train": [...], "val": [...]}.
-    """
     history = {"train": [], "val": []} #store cost per epoch
     n = X.shape[0] 
     rng = np.random.default_rng(seed)
