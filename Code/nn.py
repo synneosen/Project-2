@@ -7,6 +7,7 @@ Conventions (ikke endre på noe her uten å informere resten, altså etter alle 
 - The feed-forward step of a layer is  z = a @ W + b,  a_next = activation(z).
 - Parameters are a list of (W, b) tuples, one per layer.
 - Gradients have exactly the same structure: a list of (dW, db) tuples.
+
 """
 
 import numpy as np
