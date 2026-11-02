@@ -2,7 +2,6 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 def plot_heatmap(values, x_labels, y_labels, x_name, y_name, title="", fmt=".3f", ax=None):
-    """values har form (len(y_labels), len(x_labels))."""
     ax = ax if ax is not None else plt.gca()
     sns.heatmap(values, annot=True, fmt=fmt, xticklabels=x_labels,
                 yticklabels=y_labels, cmap="viridis", ax=ax)
@@ -13,7 +12,6 @@ def plot_heatmap(values, x_labels, y_labels, x_name, y_name, title="", fmt=".3f"
 
 
 def plot_confusion(cm, class_labels=None, title="", ax=None):
-    """Plot a confusion matrix with true classes in rows and predictions in columns."""
     ax = ax if ax is not None else plt.gca()
     sns.heatmap(
         cm,
