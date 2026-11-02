@@ -86,6 +86,7 @@ class NeuralNetwork:
         self.cost_name = cost
         self.l1 = l1
         self.l2 = l2
+        
 
         np.random.seed(seed)
         self.params = [] #the list in which the initial W, b parameters will be stored as tuples for each layer

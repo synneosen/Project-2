@@ -1,10 +1,13 @@
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-def plot_heatmap(values, x_labels, y_labels, x_name, y_name, title="", fmt=".3f", ax=None):
+def plot_heatmap(values, x_labels, y_labels, x_name, y_name, title="", fmt=".3f", ax=None, vmin=None, vmax=None, cbar=True):
     ax = ax if ax is not None else plt.gca()
     sns.heatmap(values, annot=True, fmt=fmt, xticklabels=x_labels,
-                yticklabels=y_labels, cmap="viridis", ax=ax)
+                yticklabels=y_labels, cmap="viridis", ax=ax, vmin=vmin, vmax=vmax, cbar=cbar)
+
+    
+    
     ax.set_xlabel(x_name)
     ax.set_ylabel(y_name)
     ax.set_title(title)
