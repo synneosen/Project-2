@@ -128,23 +128,17 @@ class NeuralNetwork:
         output = self.forward(X)
         n = X.shape[0] #number of input data points
 
-        if self.cost_name == "cross_entropy":
-            if self.activations[-1] != "softmax":
-                raise ValueError("cross_entropy requires a softmax output layer")
-            delta = (output - y) / n
-        elif self.cost_name == "binary_cross_entropy":
-            if self.activations[-1] != "sigmoid" or output.shape[1] != 1:
-                raise ValueError(
-                    "binary_cross_entropy requires one sigmoid output"
-                )
+        #derivative of the cost function dC/da
+        #delta = COSTS[self.cost_name][1](output, y)
+
+        #dC/da times derivative of the last activation function da/dz = derivative of the cost function w.r.t. z at the last activation
+        #delta = delta * ACTIVATIONS[self.activations[-1]][1](self.z[-1])
+        if self.cost_name == "cross_entropy" and self.activations[-1] == "softmax":
+        # Derivert av gjennomsnittlig cross-entropy med hensyn på z
             delta = (output - y) / n
         else:
-            cost_derivative = COSTS[self.cost_name][1]
-            if cost_derivative is None:
-                raise ValueError(
-                    f"No output gradient is defined for cost {self.cost_name!r}"
-                )
-            delta = cost_derivative(output, y)
+            # Samme beregning som før for regresjon med MSE
+            delta = COSTS[self.cost_name][1](output, y)
             delta = delta * ACTIVATIONS[self.activations[-1]][1](self.z[-1])
 
         gradients = [] #list for storing gradient at each activation 
