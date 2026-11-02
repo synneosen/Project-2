@@ -1,29 +1,7 @@
-"""
-Alle optimizerne brukes på samme måte:
-    opt = Adam(learning_rate=1e-3)
-    params = opt.step(params, grads)
-
-params er vektene og biasene i nettverket.
-grads er gradientene som backward() regner ut.
-Begge er lister med (W, b), én for hvert lag, og har samme form.
-
-step() gjør ett oppdateringssteg og gir tilbake de nye vektene.
-
-RMSprop og Adam må huske tidligere gradienter mellom hvert steg.
-Dette minnet lages automatisk første gang step() kalles.
-
-Om det blir vanlig gradient descent eller stokastisk gradient descent,
-bestemmes av batch_size i train() i nn.py, ikke her.
-"""
-
-#TODO: Tora fyll inn 
-
 import numpy as np
 
 
 class GD:
-    """Plain update: theta <- theta - learning_rate * grad."""
-
     def __init__(self, learning_rate=1e-2):
         
         self.learningrate = learning_rate #Storing learning rate
@@ -78,7 +56,6 @@ class Adam:
         self.t = 0 #Count updates
 
     def step(self, params, grads):
-        """Remember the bias correction with the iteration counter t."""
         if self.m is None:
             self.m = [(np.zeros_like(W), np.zeros_like(b)) for W, b in params]
             self.v = [(np.zeros_like(W), np.zeros_like(b)) for W, b in params]
