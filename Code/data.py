@@ -11,7 +11,7 @@ def runge(x):
 
 def make_runge_data(n, sigma, test_size, seed):
     rng = np.random.default_rng(seed)
-    x = rng.uniform(-1.0, 1.0, n)
+    x = np.sort(rng.uniform(-1.0, 1.0, n))
     y = runge(x) + rng.normal(0.0, sigma, n)
     X_train, X_test, y_train, y_test = train_test_split(
         x.reshape(-1, 1), y.reshape(-1, 1), test_size=test_size, random_state=seed
