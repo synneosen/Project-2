@@ -1,13 +1,5 @@
 """
 FFNN
-
-Conventions (ikke endre på noe her uten å informere resten, altså etter alle funksjoer er definert osv.):
-- Samples are stored in the rows of X: X has shape (n_samples, n_features).
-- Layer l has weight matrix W of shape (n_inputs, n_outputs) and bias b of shape (n_outputs,).
-- The feed-forward step of a layer is  z = a @ W + b,  a_next = activation(z).
-- Parameters are a list of (W, b) tuples, one per layer.
-- Gradients have exactly the same structure: a list of (dW, db) tuples.
-
 """
 
 import numpy as np
@@ -36,7 +28,6 @@ def leaky_relu_der(z, alpha=0.01):
     return np.where(z > 0, 1.0, alpha)
 
 def linear(z):
-    """Linear output layer for regression."""
     return z
 
 
@@ -45,7 +36,6 @@ def linear_der(z):
 
 
 def softmax(z):
-    """Row-wise softmax. Subtract the row max before exp for numerical stability."""
     e = np.exp(z - np.max(z, axis=1, keepdims=True))
     return e / np.sum(e, axis=1, keepdims=True)
 
@@ -69,13 +59,11 @@ def mse(y_pred, y_true):
 
 
 def mse_der(y_pred, y_true):
-    """Derivative of the MSE with respect to y_pred."""
     n = y_true.shape[0]
     return 2.0 * (y_pred - y_true) / n
 
 
 def cross_entropy(y_pred, y_true, eps=1e-12):
-    """Multiclass cross entropy, y_pred = softmax output."""
     n = y_true.shape[0]
     return -np.sum(y_true * np.log(np.clip(y_pred, eps, 1.0))) / n
 
@@ -87,24 +75,8 @@ COSTS = {
 
 
 # FFNN network:
-
-#TODO: William sitt starting point 
 class NeuralNetwork:
     def __init__(self, layer_sizes, activations, cost="mse", l1=0.0, l2=0.0, seed=2026):
-        """
-        layer_sizes: e.g. [1, 50, 50, 1] -> input, two hidden layers, output.
-                     [784, 10] -> zero hidden layers (logistic regression).
-        activations: list of names from ACTIVATIONS, one per layer after the input,
-                     so len(activations) == len(layer_sizes) - 1.
-                     e.g. ["sigmoid", "sigmoid", "identity"].
-        cost:        name from COSTS.
-        l1, l2:      penalty strengths lambda. Only affect the gradients in backward().
-        seed:        seed for weight initialisation.
-
-        Should create self.params: list of (W, b) tuples.
-        Weights: normal distribution, width scaled by the number of inputs
-        (Xavier for sigmoid, He for ReLU). Biases: decide and document the choice.
-        """
         self.layer_sizes = layer_sizes
         self.activations = activations
         self.cost_name = cost
@@ -131,11 +103,6 @@ class NeuralNetwork:
             self.params.append((W, b))
 
     def forward(self, X):
-        """
-        X: (n_samples, n_features).
-        Returns the output, shape (n_samples, n_outputs).
-        Should store z and a for every layer, since backward() needs them.
-        """
         self.a = [X] #first a stored as the initial input 
         self.z = []
 
@@ -154,12 +121,6 @@ class NeuralNetwork:
         return a #makes it simpler to retrieve the final output
 
     def backward(self, X, y):
-        """
-        X: (n_samples, n_features), y: (n_samples, n_outputs).
-        Runs forward(X), then backpropagation.
-        Returns a list of (dW, db) tuples, same order and shapes as self.params.
-        Includes the L1/L2 terms if l1 or l2 > 0.
-        """
         output = self.forward(X)
         n = X.shape[0] #number of input data points
 
