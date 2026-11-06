@@ -11,9 +11,12 @@ Conventions (ikke endre på noe her uten å informere resten, altså etter alle 
 """
 
 import numpy as np
+from scipy.special import expit
 
-def sigmoid(z):
-    return 1.0 / (1.0 + np.exp(-z))
+def sigmoid(z): 
+    return expit(z) #avoid RuntimeWarning
+#def sigmoid(z):
+    #return 1.0 / (1.0 + np.exp(-z))
 
 def sigmoid_der(z):
     s = sigmoid(z)
@@ -211,7 +214,7 @@ class NeuralNetwork:
         return COSTS[self.cost_name][0](output, y) 
 
 
-def train(model, optimizer, X, y, epochs, batch_size=None, seed=2026, X_val=None, y_val=None):
+def train(model, optimizer, X, y, epochs, batch_size=None, seed=2026, X_val=None, y_val=None, max_mse=None):
     """
     Trains the model in place.
     batch_size=None -> plain (full-batch) gradient descent.
@@ -252,9 +255,17 @@ def train(model, optimizer, X, y, epochs, batch_size=None, seed=2026, X_val=None
         train_cost = model.cost(X, y)
         history["train"].append(train_cost)
 
+        #stop if training diverges
+        if not np.isfinite(train_cost) or (max_mse is not None and train_cost > max_mse):
+            break
+
         #calculate validation cost if validation data is provided
         if X_val is not None and y_val is not None:
             val_cost = model.cost(X_val, y_val)
             history["val"].append(val_cost)
+
+            #stop if validation diverges
+            if not np.isfinite(val_cost) or (max_mse is not None and val_cost > max_mse):
+                break
 
     return history

@@ -26,14 +26,14 @@ class GD:
 
     def __init__(self, learning_rate=1e-2):
         
-        self.learningrate = learning_rate #Storing learning rate
+        self.learning_rate = learning_rate #Storing learning rate
     
     def step(self, params, grads):
         
         new_params = [] #Empty list
         for (W,b), (dW, db) in zip(params, grads): #Weights, biases and gradients for one neural network
-            W_new = W - self.learningrate*dW #Calculating the new weight
-            b_new = b - self.learningrate*db #Calculating the new bias
+            W_new = W - self.learning_rate*dW #Calculating the new weight
+            b_new = b - self.learning_rate*db #Calculating the new bias
             new_params.append((W_new, b_new)) #Storing them in the empty list
 
         return new_params 
