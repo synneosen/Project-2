@@ -1,24 +1,24 @@
 import numpy as np
 
-
+# Optimizers for training neural networks
 class GD:
     def __init__(self, learning_rate=1e-2):
         
-        self.learningrate = learning_rate #Storing learning rate
+        self.learning_rate = learning_rate
     
     def step(self, params, grads):
         
         new_params = [] #Empty list
         for (W,b), (dW, db) in zip(params, grads): #Weights, biases and gradients for one neural network
-            W_new = W - self.learningrate*dW #Calculating the new weight
-            b_new = b - self.learningrate*db #Calculating the new bias
+            W_new = W - self.learning_rate*dW #Calculating the new weight
+            b_new = b - self.learning_rate*db #Calculating the new bias
             new_params.append((W_new, b_new)) #Storing them in the empty list
 
         return new_params 
         
 
 
-class RMSprop: #crating a signal for this optimizer
+class RMSprop:
     def __init__(self, learning_rate=1e-3, rho=0.9, eps=1e-8):
         self.learning_rate = learning_rate #Storing the learning rate 
         self.rho = rho #Storing how much of the old memory we keep
@@ -26,7 +26,7 @@ class RMSprop: #crating a signal for this optimizer
         self.s = None #Memmory wich is not stored yet
 
     def step(self, params, grads): 
-        if self.s is None: #check if this is the first layer
+        if self.s is None: #Initialize running averages on the first step
             #list with memory for every layer
             self.s = [(np.zeros_like(W), np.zeros_like(b)) for W,b in params] #The 0 array have the shape of W and b, for every layer
         new_params = [] #Epty list for new parameters

@@ -1,9 +1,9 @@
 """
 FFNN
 """
-
 import numpy as np
 
+#Activation functions and their derivatives
 def sigmoid(z):
     return 1.0 / (1.0 + np.exp(-z))
 
@@ -48,6 +48,7 @@ ACTIVATIONS = {
     "softmax": (softmax, None),
 }
 
+#Cost functions. Mse for regression, cross_entropy for classification. Binary cross entropy for binary classification.
 
 def mse(y_pred, y_true):
     n = y_true.shape[0]
@@ -80,7 +81,10 @@ COSTS = {
 
 # FFNN network:
 class NeuralNetwork:
+    #Creates weights and biases for the layers.
     def __init__(self, layer_sizes, activations, cost="mse", l1=0.0, l2=0.0, seed=2026):
+        assert len(activations) == len(layer_sizes) - 1
+
         self.layer_sizes = layer_sizes
         self.activations = activations
         self.cost_name = cost
@@ -95,7 +99,7 @@ class NeuralNetwork:
             n_in = layer_sizes[i]
             n_out = layer_sizes[i + 1]
 
-            #He for ReLU family, Xavier for other activations
+            #He for ReLU family
             if activations[i] == "relu" or activations[i] == "leaky_relu":
                 scale = np.sqrt(2 / n_in)
             else:
@@ -106,6 +110,8 @@ class NeuralNetwork:
 
             self.params.append((W, b))
 
+    #Sends the input through the network, layer by layer, and returns the output. 
+    #Stores intermediate values for backpropagation.
     def forward(self, X):
         self.a = [X] #first a stored as the initial input 
         self.z = []
@@ -124,6 +130,7 @@ class NeuralNetwork:
 
         return a #makes it simpler to retrieve the final output
 
+    #Uses the core rule of backpropagation to calculate the gradients of the cost function with respect to the weights and biases.
     def backward(self, X, y):
         output = self.forward(X)
         n = X.shape[0] #number of input data points
@@ -171,8 +178,8 @@ class NeuralNetwork:
 
         return gradients
 
+    #Predicts the output for given input X. For regression, returns raw predictions. For classification, returns class index per sample.
     def predict(self, X):
-        """Regression: same as forward. Classification: class index per sample."""
         output = self.forward(X)
 
         if self.cost_name == "mse": #when we use MSE we need raw predictions
@@ -183,6 +190,7 @@ class NeuralNetwork:
 
         return np.argmax(output, axis=1) #if we have more columns, return each row index with the highest score
 
+    #Calculates the cost of the model on the given data, including regularization penalties.
     def cost(self, X, y):
         output = self.forward(X)
         data_loss = COSTS[self.cost_name][0](output, y)
@@ -193,8 +201,19 @@ class NeuralNetwork:
         return data_loss + penalty
 
 
-#Siden batch size = none trener vi på full batch...
-def train(model, optimizer, X, y, epochs, batch_size=None, seed=2026, X_val=None, y_val=None):
+#Uses the gradients calculated by backward() to update the weights and biases of the model.
+def train(
+    model,
+    optimizer,
+    X,
+    y,
+    epochs,
+    batch_size=None,
+    seed=2026,
+    X_val=None,
+    y_val=None,
+    stop_on_nonfinite=False,
+):
     history = {"train": [], "val": []} #store cost per epoch
     n = X.shape[0] 
     rng = np.random.default_rng(seed)
@@ -226,11 +245,31 @@ def train(model, optimizer, X, y, epochs, batch_size=None, seed=2026, X_val=None
 
         #calculate training cost after the epoch
         train_cost = model.cost(X, y)
-        history["train"].append(train_cost)
+        if not stop_on_nonfinite:
+            history["train"].append(train_cost)
 
         #calculate validation cost if validation data is provided
         if X_val is not None and y_val is not None:
             val_cost = model.cost(X_val, y_val)
-            history["val"].append(val_cost)
+            if not stop_on_nonfinite:
+                history["val"].append(val_cost)
+
+        if stop_on_nonfinite and (
+            not np.isfinite(train_cost)
+            or (
+                X_val is not None
+                and y_val is not None
+                and not np.isfinite(val_cost)
+            )
+        ):
+            history["train"].append(np.nan)
+            if X_val is not None and y_val is not None:
+                history["val"].append(np.nan)
+            break
+
+        if stop_on_nonfinite:
+            history["train"].append(train_cost)
+            if X_val is not None and y_val is not None:
+                history["val"].append(val_cost)
 
     return history
