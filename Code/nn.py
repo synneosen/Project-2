@@ -229,3 +229,46 @@ def train(model, optimizer, X, y, epochs, batch_size=None, seed=2026, X_val=None
             history["val"].append(val_cost)
 
     return history
+
+def train_classification(model, optimizer, X, y, epochs, batch_size=None, seed=2026, X_val=None, y_val=None):
+    history = {"train": [], "val": []} #store cost per epoch
+    n = X.shape[0] 
+    rng = np.random.default_rng(seed)
+
+    if batch_size is None:
+        batch_size = n
+
+    for epoch in range(epochs):
+
+        #shuffle sample indices at the start of each epoch
+        indices = rng.permutation(n)
+
+        #shuffle X and y in the same order
+        X_shuffled = X[indices]
+        y_shuffled = y[indices]
+
+        #split data into batches
+        for start in range(0, n, batch_size):
+            end = start + batch_size
+
+            X_batch = X_shuffled[start:end]
+            y_batch = y_shuffled[start:end]
+
+            #calculate gradients using backpropagation
+            gradients = model.backward(X_batch, y_batch)
+
+            #optimizer returns updated weights and biases
+            model.params = optimizer.step(model.params, gradients)
+
+        #calculate training cost after the epoch
+        #train_cost = model.cost(X, y)
+        train_cost = cross_entropy(model.forward(X), y)
+        history["train"].append(train_cost)
+
+        #calculate validation cost if validation data is provided
+        if X_val is not None and y_val is not None:
+            #val_cost = model.cost(X_val, y_val)
+            val_cost = cross_entropy(model.forward(X_val), y_val)
+            history["val"].append(val_cost)
+
+    return history
