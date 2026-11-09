@@ -1,9 +1,0 @@
-{
-  "model": "sklearn LogisticRegression (solver=saga)",
-  "n_train": 50000,
-  "val_accuracy": 0.9242,
-  "n_iter": 475,
-  "max_iter": 1000,
-  "time_s": 1611.3232186000005,
-  "seed": 2026
-}
