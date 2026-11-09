@@ -18,7 +18,7 @@ The notebooks were prepared with Python 3.11.4. From the repository root, instal
 the dependencies with:
 
 ```bash
-python -m pip install -r requirements.txt
+py -3.11 -m pip install -r requirements.txt
 ```
 
 Part E reads MNIST from `../data/mnist.npz` when the notebook working directory
@@ -28,13 +28,13 @@ it at `data/mnist.npz`. The dataset is ignored by Git.
 
 ## Running the notebooks
 
-Start Jupyter with `Code/` as the working directory, then run each notebook from
-top to bottom. 
-*TODO* Legg til del b
-Part C/D generates its Runge data in the notebook and has no
-external data-file dependency. Part E requires `data/mnist.npz`. The notebooks
-use shared modules from `Code/`, but do not depend on outputs from one another.
+Open the repository, open a notebook under `Code/`, select the Python 3.11 environment
+as its kernel, and use **Run All**. Keep the notebook working directory set to
+`Code/` so Part E can find `../data/mnist.npz`.
 
+Run each notebook from top to bottom. The notebooks use shared modules from
+`Code/`, but do not depend on outputs from one another. Part B and Part C/D
+generate Runge data in the notebooks. Part E requires `../data/mnist.npz`.
 
 ## Repository layout
 
@@ -62,6 +62,7 @@ shuffles in the documented notebooks use seed `2026`.
 
 | Part | Notebook | Purpose | Figures and tables produced | Approximate runtime |
 |---|---|---|---|---|
+| b | `Code/part_b_learningrate.ipynb` | Compares GD, RMSprop, and Adam learning rates for `[1, 50, 1]` and `[1, 100, 100, 1]` networks. Selects each run's best validation-MSE epoch and evaluates selected configurations on the test set. | Prints the learning-rate search results and test MSEs; displays two learning-rate plots inline. `savefig` is commented out, so this notebook does not currently save figure files or result tables. | Not benchmarked; 60 runs of up to 10,000 epochs, plus two retraining runs. Expect a long run. |
 | b | `Code/part_b_regression.ipynb` | TODO | TODO | TODO |
 | c/d | `Code/part_cd_activations_regularization.ipynb` | Compares sigmoid, ReLU, and Leaky ReLU networks over depths and widths, then evaluates L1 and L2 regularization. | Saves `part_cd_activation_train_mse.pdf`, `part_cd_activation_validation_mse.pdf`, `part_cd_l1_validation_mse.pdf`, and `part_cd_l2_validation_mse.pdf` in `figures/`. Best configurations and MSE summaries are printed in notebook output; no table file is saved. | Not benchmarked; about 675 sweep runs at 1,000 epochs each, plus final retraining. Expect a long run. |
 | e | `Code/part_e_classification_an.ipynb` | Compares Adam and RMSprop learning rates, network architectures, L2 regularization, and a scikit-learn logistic-regression baseline on MNIST. | Saves nine PDFs in `figures/`: initial loss curves; Adam and RMSprop learning-rate curves; architecture heatmap and best-architecture curves; L2 train/validation curves; and a confusion matrix. Summary tables are printed in notebook output, not saved as files. | Not benchmarked; approximately 40 neural-network training runs of up to 30 epochs, plus logistic regression. Runtime depends on hardware. |
@@ -72,6 +73,6 @@ model is currently hard-coded to a sigmoid network with two 50-node hidden
 layers rather than reconstructed from the printed best configuration. Review
 that choice before using its test score as the selected-model result.
 
-Part E saves figures under `figures/`. The Part E
-confusion matrix is built in the notebook with NumPy; `metrics.confusion_matrix`
-is currently not used by that cell, although `metrics.accuracy` is used.
+Part E saves figures under `figures/`. The confusion matrix is assembled in the
+notebook with NumPy (`np.add.at`) and plotted with `plotting.plot_confusion`.
+`metrics.py` currently provides `accuracy`, which the notebook uses.
