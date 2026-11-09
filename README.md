@@ -7,10 +7,7 @@
 
 ## Description
 
-This project implements a feed-forward neural network with backpropagation. It
-applies the network to regression on the one-dimensional Runge function and
-compares it with OLS, Ridge, and Lasso from Project 1. It also applies the
-network to MNIST classification and compares it with logistic regression.
+This project implements a feed-forward neural network with backpropagation. It applies the network to regression on the one-dimensional Runge function and compares it with OLS, Ridge and Lasso from Project 1. It also applies the network to MNIST classification and compares it with logistic regression.
 
 ## Installation
 
@@ -21,20 +18,13 @@ the dependencies with:
 py -3.11 -m pip install -r requirements.txt
 ```
 
-Part E reads MNIST from `../data/mnist.npz` when the notebook working directory
-is `Code/`. Download the file from
-<https://storage.googleapis.com/tensorflow/tf-keras-datasets/mnist.npz> and put
-it at `data/mnist.npz`. The dataset is ignored by Git.
+Part E reads MNIST from `../data/mnist.npz` when the notebook working directory is `Code/`. Download the file from <https://storage.googleapis.com/tensorflow/tf-keras-datasets/mnist.npz> and put it at `data/mnist.npz`. The dataset is ignored by Git.
 
 ## Running the notebooks
 
-Open the repository, open a notebook under `Code/`, select the Python 3.11 environment
-as its kernel, and use **Run All**. Keep the notebook working directory set to
-`Code/` so Part E can find `../data/mnist.npz`.
+Open the repository, open a notebook under `Code/`, select the Python 3.11 environment as its kernel and use **Run All**. Keep the notebook working directory set to `Code/` so Part E can find `../data/mnist.npz`.
 
-Run each notebook from top to bottom. The notebooks use shared modules from
-`Code/`, but do not depend on outputs from one another. Part B and Part C/D
-generate Runge data in the notebooks. Part E requires `../data/mnist.npz`.
+Run each notebook from top to bottom. The notebooks use shared modules from `Code/`, but do not depend on outputs from one another. Part B and Part C/D generate Runge data in the notebooks. Part E requires `../data/mnist.npz`.
 
 ## Repository layout
 
@@ -49,22 +39,22 @@ project-2.pdf  Project report
 
 | Module | Description |
 |---|---|
-| `data.py` | Runge data generation and splitting, regression scaling, MNIST loading, and one-hot encoding. |
-| `nn.py` | Neural-network layers, activations, losses, backpropagation, prediction, and training loops. |
-| `optimizers.py` | Gradient descent, RMSprop, and Adam optimizers. |
+| `data.py` | Runge data generation and splitting, regression scaling, MNIST loading and one-hot encoding. |
+| `nn.py` | Neural-network layers, activations, losses, backpropagation, prediction and training loops. |
+| `optimizers.py` | Gradient descent, RMSprop and Adam optimizers. |
 | `metrics.py` | Accuracy and confusion-matrix calculations. |
 | `plotting.py` | Shared heatmap and confusion-matrix plotting helpers. |
 
 ## Notebooks and outputs
 
-All random data generation, data splits, model initializations, and training
+All random data generation, data splits, model initializations and training
 shuffles in the documented notebooks use seed `2026`.
 
 | Part | Notebook | Purpose | Figures and tables produced | Approximate runtime |
 |---|---|---|---|---|
-| b | `Code/part_b_learningrate.ipynb` | Compares GD, RMSprop, and Adam learning rates for `[1, 50, 1]` and `[1, 100, 100, 1]` networks. Selects each run's best validation-MSE epoch and evaluates selected configurations on the test set. | Prints the learning-rate search results and test MSEs; displays two learning-rate plots inline. `savefig` is commented out, so this notebook does not currently save figure files or result tables. | Not benchmarked; 60 runs of up to 10,000 epochs, plus two retraining runs. Expect a long run. |
-| c/d | `Code/part_cd_activations_regularization.ipynb` | Compares sigmoid, ReLU, and Leaky ReLU networks over depths and widths, then evaluates L1 and L2 regularization. | Saves `part_cd_activation_train_mse.pdf`, `part_cd_activation_validation_mse.pdf`, `part_cd_l1_validation_mse.pdf`, and `part_cd_l2_validation_mse.pdf` in `figures/`. Best configurations and MSE summaries are printed in notebook output; no table file is saved. | Not benchmarked; about 675 sweep runs at 1,000 epochs each, plus final retraining. Expect a long run. |
-| e | `Code/part_e_classification_an.ipynb` | Compares Adam and RMSprop learning rates, network architectures, L2 regularization, and a scikit-learn logistic-regression baseline on MNIST. | Saves nine PDFs in `figures/`: initial loss curves; Adam and RMSprop learning-rate curves; architecture heatmap and best-architecture curves; L2 train/validation curves; and a confusion matrix. Summary tables are printed in notebook output, not saved as files. | Not benchmarked; approximately 40 neural-network training runs of up to 30 epochs, plus logistic regression. Runtime depends on hardware. |
+| b | `Code/part_b_learningrate.ipynb` | Compares GD, RMSprop and Adam learning rates for `[1, 50, 1]` and `[1, 100, 100, 1]` networks. Selects each run's best validation-MSE epoch and evaluates selected configurations on the test set. | Prints the learning-rate search results and test MSEs; displays two learning-rate plots inline. `savefig` is commented out, so this notebook does not currently save figure files or result tables. | Not benchmarked; 60 runs of up to 10,000 epochs, plus two retraining runs. Expect a long run. |
+| c/d | `Code/part_cd_activations_regularization.ipynb` | Compares sigmoid, ReLU and Leaky ReLU networks over depths and widths, then evaluates L1 and L2 regularization. | Saves `part_cd_activation_train_mse.pdf`, `part_cd_activation_validation_mse.pdf`, `part_cd_l1_validation_mse.pdf` and `part_cd_l2_validation_mse.pdf` in `figures/`. Best configurations and MSE summaries are printed in notebook output; no table file is saved. | Not benchmarked; about 675 sweep runs at 1,000 epochs each, plus final retraining. Expect a long run. |
+| e | `Code/part_e_classification_an.ipynb` | Compares Adam and RMSprop learning rates, network architectures, L2 regularization and a scikit-learn logistic-regression baseline on MNIST. | Saves nine PDFs in `figures/`: initial loss curves; Adam and RMSprop learning-rate curves; architecture heatmap and best-architecture curves; L2 train/validation curves; and a confusion matrix. Summary tables are printed in notebook output, not saved as files. | Not benchmarked; approximately 40 neural-network training runs of up to 30 epochs, plus logistic regression. Runtime depends on hardware. |
 
 Part C/D trains roughly 675 sweep configurations: 27 activation/architecture
 combinations and 324 configurations for each of L1 and L2. Its final activation
